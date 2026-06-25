@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Admin Login – Green Valley Lawn Care</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+    <style>
+        body {
+            padding-top: 0 !important;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            background: #f0f4ec;
+        }
+        .login-box {
+            background: white; border-radius: 20px; padding: 40px;
+            border: 1px solid rgba(74,124,36,0.12);
+            box-shadow: var(--shadow-lg);
+            width: 100%; max-width: 380px;
+        }
+        .login-header { text-align: center; margin-bottom: 32px; }
+        .login-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            background: var(--green-deep);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin: 0 auto 16px;
+        }
+        .login-business {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--text-soft); margin-bottom: 4px;
+        }
+        .login-header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 22px; font-weight: 700;
+            color: var(--green-deep); margin: 0;
+        }
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 500;
+            color: var(--text-mid); margin-bottom: 6px;
+        }
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrap .input-icon {
+            position: absolute; left: 12px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px; color: var(--text-soft);
+        }
+        .input-wrap input {
+            width: 100%;
+            padding: 10px 40px 10px 38px;
+            border: 1.5px solid rgba(74,124,36,0.2); border-radius: 10px;
+            font-family: 'DM Sans', sans-serif; font-size: 14px;
+            color: var(--text); background: var(--cream);
+            outline: none; transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .input-wrap input:focus { border-color: var(--green-mid); background: white; }
+        .error-msg {
+            background: #fee2e2; color: #dc2626;
+            font-size: 13px; padding: 10px 14px;
+            border-radius: 10px; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-login {
+            width: 100%; background: var(--green-deep); color: var(--green-pale);
+            border: none; cursor: pointer; padding: 12px;
+            border-radius: 100px; font-family: 'DM Sans', sans-serif;
+            font-size: 15px; font-weight: 500; margin-top: 8px;
+            transition: background 0.2s, transform 0.15s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .toggle-eye {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            user-select: none;
+            line-height: 1;
+        }
+        .btn-login:hover { background: var(--green-mid); transform: translateY(-1px); }
+        .login-footer {
+            text-align: center; font-size: 12px;
+            color: var(--text-soft); margin-top: 20px;
+        }
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            font-size: 16px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <div class="login-header">
+        <div class="login-icon">🌿</div>
+        <p class="login-business">Green Valley Lawn Care</p>
+        <h1>Admin Panel</h1>
+    </div>
+
+    <div class="error-msg" th:if="${param.error}">
+        ⚠️ Incorrect username or password.
+    </div>
+
+    <form method="POST" action="/admin/login">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="form-group">
+            <label>Username</label>
+            <div class="input-wrap">
+                <span class="input-icon"></span>
+                <input type="text" name="username" placeholder="Admin" autofocus required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+                <span class="input-icon"></span>
+                <input type="password" name="password" id="passwordInput" placeholder="••••••••" required/>
+                <span class="toggle-eye" onclick="togglePassword()" id="eyeIcon">👁️</span>
+            </div>
+        </div>
+        <button type="submit" class="btn-login">Sign in →</button>
+    </form>
+
+    <p class="login-footer">🛡️ Restricted access — authorized users only</p>
+</div>
+</body>
+<script>
+    function togglePassword() {
+        const input = document.getElementById('passwordInput');
+        const icon = document.getElementById('eyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            icon.textContent = '👁️';
+        }
+    }
+</script>
+</html>

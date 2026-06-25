@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="'Services – ' + ${company.name}">Services – Company Name</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/style.css}"/>
+  <style>
+    /* ── SERVICES GRID ── */
+    #services { background: var(--white); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    .service-card {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid rgba(74,124,36,0.1);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(74,124,36,0.25); }
+    .service-icon {
+      width: 52px; height: 52px; background: var(--green-pale);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin-bottom: 18px;
+    }
+    .service-card h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--green-deep); margin-bottom: 8px; }
+    .service-card p { font-size: 14px; color: var(--text-mid); line-height: 1.65; margin-bottom: 18px; }
+    .service-price { font-size: 13px; font-weight: 600; color: var(--amber); }
+
+    /* ── PRICING PLANS ── */
+    #pricing { background: var(--cream); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px; align-items: start;
+    }
+    .pricing-card {
+      background: var(--white);
+      border-radius: 20px; padding: 36px;
+      border: 1.5px solid rgba(74,124,36,0.1);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .pricing-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .pricing-card.featured {
+      background: var(--green-deep);
+      border-color: transparent;
+      color: var(--white);
+      transform: scale(1.03);
+      box-shadow: var(--shadow-lg);
+    }
+    .pricing-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+    .popular-tag {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: var(--amber); color: var(--white);
+      font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 4px 14px; border-radius: 100px;
+    }
+    .pricing-card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 22px; font-weight: 700; margin-bottom: 6px;
+    }
+    .pricing-card .plan-sub { font-size: 13px; opacity: 0.65; margin-bottom: 24px; }
+    .pricing-amount {
+      display: flex; align-items: baseline; gap: 4px;
+      margin-bottom: 28px;
+    }
+    .pricing-amount .dollar { font-size: 22px; font-weight: 600; color: var(--green-mid); margin-top: 6px; }
+    .pricing-card.featured .dollar { color: var(--green-light); }
+    .pricing-amount .num {
+      font-family: 'Fraunces', serif;
+      font-size: 52px; font-weight: 700; line-height: 1;
+      color: var(--green-deep);
+    }
+    .pricing-card.featured .num { color: var(--white); }
+    .pricing-amount .period { font-size: 14px; opacity: 0.6; }
+    .pricing-divider { height: 1px; background: rgba(74,124,36,0.1); margin-bottom: 24px; }
+    .pricing-card.featured .pricing-divider { background: rgba(255,255,255,0.15); }
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 32px; }
+    .pricing-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .pricing-features li .check { color: var(--green-mid); font-weight: 700; font-size: 13px; }
+    .pricing-card.featured .pricing-features li .check { color: var(--green-light); }
+    .pricing-card.featured .pricing-features li { color: rgba(255,255,255,0.85); }
+    .btn-plan {
+      display: block; text-align: center;
+      background: var(--green-pale); color: var(--green-deep);
+      padding: 13px; border-radius: 100px;
+      font-size: 14px; font-weight: 500; text-decoration: none;
+      transition: background 0.18s, transform 0.14s;
+    }
+    .btn-plan:hover { background: var(--green-light); color: var(--white); }
+    .pricing-card.featured .btn-plan { background: var(--white); color: var(--green-deep); }
+    .pricing-card.featured .btn-plan:hover { background: var(--green-light); color: var(--white); }
+
+    /* ── ADD-ONS ── */
+    #addons { background: var(--white); }
+    .addons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .addon-card {
+      background: var(--cream); border-radius: var(--radius);
+      padding: 22px; border: 1px solid rgba(74,124,36,0.1);
+      display: flex; gap: 14px; align-items: flex-start;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .addon-card:hover { border-color: rgba(74,124,36,0.25); box-shadow: var(--shadow-sm); }
+    .addon-icon { font-size: 26px; flex-shrink: 0; }
+    .addon-card h4 { font-size: 15px; font-weight: 600; color: var(--green-deep); margin-bottom: 4px; }
+    .addon-card p { font-size: 13px; color: var(--text-mid); line-height: 1.55; margin-bottom: 8px; }
+    .addon-price { font-size: 13px; font-weight: 600; color: var(--amber); }
+
+    @media (max-width: 900px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+      .pricing-card.featured { transform: none; }
+      .pricing-card.featured:hover { transform: translateY(-4px); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="leaf">🌿</span>
+    <span th:text="${company.name}">Company Name</span>
+  </a>
+  <span class="nav-hamburger">☰</span>
+  <div class="nav-links">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/services}">Services</a>
+      <a th:href="@{/reviews}">Reviews</a>
+      <a th:href="@{/booking}" class="nav-cta">Book Now</a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="section-tag">What We Offer</div>
+  <h1>Services &amp;<br/><em style="font-style:italic;color:var(--green-mid)">Pricing</em></h1>
+  <p th:text="'Everything your lawn needs — handled by ' + ${company.name} + ' right here in ' + ${company.city} + '. Transparent pricing, no surprises.'">
+    Everything your lawn needs — handled by Company Name right here in Sacramento. Transparent pricing, no surprises.
+  </p>
+</div>
+
+<!-- INDIVIDUAL SERVICES -->
+<section id="services">
+  <div class="fade-in" style="margin-bottom:48px">
+    <div class="section-tag">Our Services</div>
+    <h2 class="section-title">Built for Every Yard</h2>
+    <p class="section-sub" th:text="'From a quick weekly mow to a full seasonal overhaul — ' + ${company.name} + ' handles it all.'">
+      From a quick weekly mow to a full seasonal overhaul — Company Name handles it all.
+    </p>
+  </div>
+  <div class="services-grid">
+        <div class="service-card fade-in" th:each="svc : ${services}">
+            <div class="service-icon" th:text="${svc.icon}">🌿</div>
+            <h3 th:text="${svc.name}">Service Name</h3>
+            <p th:text="${svc.description}">Description</p>
+            <div class="service-price" th:text="${svc.price}">From $45</div>
+        </div>
+    </div>
+</section>
+
+<!-- PRICING PLANS -->
+<section id="pricing">
+  <div class="fade-in" style="text-align:center;margin-bottom:52px">
+    <div class="section-tag" style="justify-content:center">Monthly Plans</div>
+    <h2 class="section-title">Simple, Honest Pricing</h2>
+    <p class="section-sub" style="margin:0 auto" th:text="'Pick the plan that fits your yard. No contracts, no hidden fees — just a greener lawn every week in ' + ${company.city} + '.'">
+      Pick the plan that fits your yard. No contracts, no hidden fees — just a greener lawn every week.
+    </p>
+  </div>
+  <div class="pricing-grid">
+        <div th:each="plan : ${plans}"
+             th:classappend="${plan.featured} ? 'featured'"
+             class="pricing-card fade-in">
+            <div class="popular-tag" th:if="${plan.featured}">Most Popular</div>
+            <h3 th:text="${plan.name}">Plan</h3>
+            <span th:text="${plan.description}">subtitle</span>
+            <div class="pricing-amount">
+                <span class="dollar">$</span>
+                <span class="num" th:text="${plan.price}">79</span>
+                <span class="period">/ mo</span>
+            </div>
+            <div class="pricing-divider"></div>
+            <ul class="pricing-features">
+                <li th:each="feature : ${plan.features}">
+                    <span class="check">✓</span>
+                    <span th:text="${feature}">Feature</span>
+                </li>
+            </ul>
+            <a th:href="@{/booking}" class="btn-plan">Get Started</a>
+        </div>
+    </div>
+</section>
+
+<!-- ADD-ONS -->
+<section id="addons">
+  <div class="fade-in" style="margin-bottom:40px">
+    <div class="section-tag">À La Carte</div>
+    <h2 class="section-title">Add-On Services</h2>
+    <p class="section-sub">Need something extra? Add any of these to any plan or book them as a one-time service.</p>
+  </div>
+  <div class="addons-grid">
+        <div class="addon-card fade-in" th:each="addon : ${addons}">
+            <span class="addon-icon" th:text="${addon.icon}">🌸</span>
+            <div>
+                <h4 th:text="${addon.name}">Addon Name</h4>
+                <p th:text="${addon.description}">Description</p>
+                <div class="addon-price" th:text="${addon.price}">From $40</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">
+        <span class="leaf">🌿</span>
+        <span th:text="${company.name}">Company Name</span>
+      </a>
+      <p th:text="'Proudly serving ' + ${company.city} + ' and surrounding areas since ' + ${company.foundedYear} + '.'">
+        Proudly serving Sacramento and surrounding areas since 2009.
+      </p>
+    </div>
+    <div class="footer-col">
+      <h4>Pages</h4>
+        <a th:href="@{/}">Home &amp; About</a>
+        <a th:href="@{/services}">Services &amp; Pricing</a>
+        <a th:href="@{/reviews}">Reviews</a>
+        <a th:href="@{/booking}">Book Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a th:href="'tel:' + ${company.phone}" th:text="${company.phone}">(916) 555-0000</a>
+      <a th:href="'mailto:' + ${company.email}" th:text="${company.email}">hello@company.com</a>
+      <a th:text="${company.city} + ', CA'">Sacramento, CA</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span th:text="'© 2025 ' + ${company.name} + '. All rights reserved.'">© 2025 Company Name. All rights reserved.</span>
+    <span th:text="'Made with ❤️ for ' + ${company.city}">Made with ❤️ for Sacramento</span>
+  </div>
+</footer>
+
+<script th:src="@{/main.js}"></script>
+</body>
+</html>

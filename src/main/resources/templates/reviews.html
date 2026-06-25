@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="'Reviews – ' + ${company.name}">Reviews – Company Name</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/style.css}"/>
+  <style>
+    /* ── RATING SUMMARY ── */
+    #summary { background: var(--white); }
+    .summary-grid { display: grid; grid-template-columns: auto 1fr; gap: 64px; align-items: center; }
+    .summary-score { text-align: center; }
+    .score-big {
+      font-family: 'Fraunces', serif;
+      font-size: 88px; font-weight: 700;
+      color: var(--green-deep); line-height: 1;
+    }
+    .score-stars { color: #f59e0b; font-size: 28px; letter-spacing: 3px; margin: 6px 0; }
+    .score-sub { font-size: 14px; color: var(--text-soft); }
+    .rating-bars { display: flex; flex-direction: column; gap: 10px; }
+    .rating-row { display: flex; align-items: center; gap: 12px; }
+    .rating-label { font-size: 13px; color: var(--text-mid); width: 36px; text-align: right; flex-shrink: 0; }
+    .rating-bar-wrap {
+      flex: 1; height: 8px; background: var(--green-pale);
+      border-radius: 100px; overflow: hidden;
+    }
+    .rating-bar-fill { height: 100%; background: var(--green-mid); border-radius: 100px; transition: width 1s ease; }
+    .rating-count { font-size: 12px; color: var(--text-soft); width: 28px; flex-shrink: 0; }
+
+    /* ── GOOGLE BADGE ── */
+    .google-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
+    .google-badge {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: var(--white); border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 100px; padding: 9px 18px;
+      font-size: 13px; font-weight: 500; color: var(--text-mid);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .google-g {
+      width: 22px; height: 22px; background: #4285f4;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: white;
+    }
+
+    /* ── REVIEWS GRID ── */
+    #reviews { background: var(--cream); }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 22px;
+    }
+    .review-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid rgba(74,124,36,0.08);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .review-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .review-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .review-stars { color: #f59e0b; font-size: 14px; letter-spacing: 2px; }
+    .review-source { font-size: 11px; color: var(--text-soft); }
+    .review-text {
+      font-size: 14px; line-height: 1.72; color: var(--text-mid);
+      font-style: italic; margin-bottom: 22px;
+    }
+    .review-author { display: flex; align-items: center; gap: 12px; }
+    .review-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--green-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600;
+      color: var(--green-deep); flex-shrink: 0;
+    }
+    .review-name { font-size: 14px; font-weight: 500; color: var(--text); }
+    .review-meta { font-size: 12px; color: var(--text-soft); margin-top: 1px; }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      background: var(--green-deep);
+      border-radius: 24px; padding: 52px 48px;
+      text-align: center; margin: 0 6% 72px;
+    }
+    .cta-banner h2 { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 700; color: var(--white); margin-bottom: 14px; }
+    .cta-banner p { font-size: 16px; color: rgba(255,255,255,0.7); max-width: 480px; margin: 0 auto 32px; line-height: 1.7; }
+
+    @media (max-width: 768px) {
+      .summary-grid { grid-template-columns: 1fr; gap: 36px; }
+      .cta-banner { margin: 0 0 48px; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="leaf">🌿</span>
+    <span th:text="${company.name}">Company Name</span>
+  </a>
+  <span class="nav-hamburger">☰</span>
+  <div class="nav-links">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/services}">Services</a>
+      <a th:href="@{/reviews}">Reviews</a>
+      <a th:href="@{/booking}" class="nav-cta">Book Now</a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="section-tag">Customer Reviews</div>
+  <h1><span th:text="${company.city}">Sacramento</span><br/><em style="font-style:italic;color:var(--green-mid)">Loves Us.</em></h1>
+  <p th:text="'Real reviews from real ' + ${company.city} + ' families — unfiltered and straight from Google.'">
+    Real reviews from real Sacramento families — unfiltered and straight from Google.
+  </p>
+</div>
+
+<!-- RATING SUMMARY -->
+<section id="summary">
+  <div class="summary-grid fade-in">
+    <div class="summary-score">
+      <div class="score-big">4.9</div>
+      <div class="score-stars">★★★★★</div>
+      <div class="score-sub">Based on 120+ reviews</div>
+    </div>
+    <div>
+      <div class="rating-bars">
+        <div class="rating-row">
+          <span class="rating-label">5 ★</span>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:92%"></div></div>
+          <span class="rating-count">110</span>
+        </div>
+        <div class="rating-row">
+          <span class="rating-label">4 ★</span>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:7%"></div></div>
+          <span class="rating-count">8</span>
+        </div>
+        <div class="rating-row">
+          <span class="rating-label">3 ★</span>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:2%"></div></div>
+          <span class="rating-count">2</span>
+        </div>
+        <div class="rating-row">
+          <span class="rating-label">2 ★</span>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:0%"></div></div>
+          <span class="rating-count">0</span>
+        </div>
+        <div class="rating-row">
+          <span class="rating-label">1 ★</span>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:0%"></div></div>
+          <span class="rating-count">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="fade-in">
+    <div class="google-row">
+      <div class="google-badge">
+        <div class="google-g">G</div>
+        Verified Google Reviews
+      </div>
+      <span style="font-size:13px;color:var(--text-soft)" th:text="'All reviews from ' + ${company.city} + ' area customers'">All reviews from Sacramento area customers</span>
+    </div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card fade-in">
+      <div class="review-card-top">
+        <div class="review-stars">★★★★★</div>
+        <span class="review-source">Google</span>
+      </div>
+      <p class="review-text">"They transformed our backyard completely. Super friendly team, always on time, and the lawn has never looked better. Highly recommend to anyone in the area!"</p>
+      <div class="review-author">
+        <div class="review-avatar">JM</div>
+        <div>
+          <div class="review-name">Jennifer M.</div>
+          <div class="review-meta" th:text="'East ' + ${company.city} + ' · 2 weeks ago'">East Sacramento · 2 weeks ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="review-card-top">
+        <div class="review-stars">★★★★★</div>
+        <span class="review-source">Google</span>
+      </div>
+      <p class="review-text">"Been using them for 3 years. Consistent, professional, and they actually care. My neighbors keep asking who does my lawn — I always send them here."</p>
+      <div class="review-author">
+        <div class="review-avatar">DT</div>
+        <div>
+          <div class="review-name">David T.</div>
+          <div class="review-meta" th:text="'Midtown ' + ${company.city} + ' · 1 month ago'">Midtown Sacramento · 1 month ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="review-card-top">
+        <div class="review-stars">★★★★★</div>
+        <span class="review-source">Google</span>
+      </div>
+      <p class="review-text">"Booking online was so easy. They came out the next day, gave me a fair quote, and now my yard looks like a golf course. Absolutely worth every penny."</p>
+      <div class="review-author">
+        <div class="review-avatar">RL</div>
+        <div>
+          <div class="review-name">Rachel L.</div>
+          <div class="review-meta" th:text="${company.city} + ' · 3 weeks ago'">Sacramento · 3 weeks ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="review-card-top">
+        <div class="review-stars">★★★★★</div>
+        <span class="review-source">Google</span>
+      </div>
+      <p class="review-text">"Called on a Tuesday, they were out by Thursday. The crew was respectful, quiet, and left zero mess behind. Signed up for the monthly plan right away."</p>
+      <div class="review-author">
+        <div class="review-avatar">KP</div>
+        <div>
+          <div class="review-name">Kevin P.</div>
+          <div class="review-meta" th:text="${company.city} + ' · 5 days ago'">Sacramento · 5 days ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="review-card-top">
+        <div class="review-stars">★★★★★</div>
+        <span class="review-source">Google</span>
+      </div>
+      <p class="review-text">"Fair pricing, great communication, and the lawn looks incredible. They even noticed a drainage issue and pointed it out without charging me. Real professionals."</p>
+      <div class="review-author">
+        <div class="review-avatar">AM</div>
+        <div>
+          <div class="review-name">Angela M.</div>
+          <div class="review-meta" th:text="${company.city} + ' · 2 months ago'">Sacramento · 2 months ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="review-card-top">
+        <div class="review-stars">★★★★☆</div>
+        <span class="review-source">Google</span>
+      </div>
+      <p class="review-text">"Great service overall. Had one reschedule early on, but they called ahead and made it right. The quality of work is genuinely top-notch. Will keep using them."</p>
+      <div class="review-author">
+        <div class="review-avatar">BH</div>
+        <div>
+          <div class="review-name">Brian H.</div>
+          <div class="review-meta" th:text="'North ' + ${company.city} + ' · 1 month ago'">North Sacramento · 1 month ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div class="cta-banner fade-in">
+  <h2>Ready for a Better Lawn?</h2>
+  <p th:text="'Join ' + ${company.yardsServed} + ' happy ' + ${company.city} + ' families. Book your free quote — we respond same day.'">
+    Join 500+ happy Sacramento families. Book your free quote — we respond same day.
+  </p>
+  <a th:href="@{/booking}" class="btn-light">📅 Book My Free Quote</a>
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">
+        <span class="leaf">🌿</span>
+        <span th:text="${company.name}">Company Name</span>
+      </a>
+      <p th:text="'Proudly serving ' + ${company.city} + ' and surrounding areas since ' + ${company.foundedYear} + '.'">
+        Proudly serving Sacramento and surrounding areas since 2009.
+      </p>
+    </div>
+    <div class="footer-col">
+      <h4>Pages</h4>
+        <a th:href="@{/}">Home &amp; About</a>
+        <a th:href="@{/services}">Services &amp; Pricing</a>
+        <a th:href="@{/reviews}">Reviews</a>
+        <a th:href="@{/booking}">Book Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a th:href="'tel:' + ${company.phone}" th:text="${company.phone}">(916) 555-0000</a>
+      <a th:href="'mailto:' + ${company.email}" th:text="${company.email}">hello@company.com</a>
+      <a th:text="${company.city} + ', CA'">Sacramento, CA</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span th:text="'© 2025 ' + ${company.name} + '. All rights reserved.'">© 2025 Company Name. All rights reserved.</span>
+    <span th:text="'Made with ❤️ for ' + ${company.city}">Made with ❤️ for Sacramento</span>
+  </div>
+</footer>
+
+<script th:src="@{/main.js}"></script>
+</body>
+</html>
