@@ -2,96 +2,76 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Admin Login – Green Valley Lawn Care</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${company != null ? company.name + ' — Admin Login' : 'Admin Login'}">GreenCut — Admin Login</title>
     <link rel="stylesheet" th:href="@{/style.css}"/>
     <style>
         body {
-            padding-top: 0 !important;
             min-height: 100vh;
             display: flex; align-items: center; justify-content: center;
-            background: #f0f4ec;
+            background: var(--green-pale);
         }
         .login-box {
-            background: white; border-radius: 20px; padding: 40px;
-            border: 1px solid rgba(74,124,36,0.12);
+            background: var(--white); border-radius: var(--radius);
+            padding: 44px 40px;
             box-shadow: var(--shadow-lg);
             width: 100%; max-width: 380px;
         }
-        .login-header { text-align: center; margin-bottom: 32px; }
+        .login-header { text-align: center; margin-bottom: 30px; }
         .login-icon {
-            width: 52px; height: 52px; border-radius: 14px;
-            background: var(--green-deep);
+            width: 56px; height: 56px; border-radius: 16px;
+            background: var(--green-dark);
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; margin: 0 auto 16px;
+            font-size: 26px; margin: 0 auto 16px;
         }
         .login-business {
-            font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-            text-transform: uppercase; color: var(--text-soft); margin-bottom: 4px;
+            font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--text-light); margin-bottom: 4px;
         }
         .login-header h1 {
-            font-family: 'Fraunces', serif;
-            font-size: 22px; font-weight: 700;
-            color: var(--green-deep); margin: 0;
+            font-size: 1.45rem; font-weight: 800;
+            color: var(--green-dark); margin: 0;
         }
-        .form-group { margin-bottom: 14px; }
+        .form-group { margin-bottom: 16px; }
         .form-group label {
-            display: block; font-size: 13px; font-weight: 500;
-            color: var(--text-mid); margin-bottom: 6px;
+            display: block; font-size: .88rem; font-weight: 700;
+            color: var(--text-dark); margin-bottom: 6px;
         }
-        .input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
+        .input-wrap { position: relative; display: flex; align-items: center; }
         .input-wrap .input-icon {
-            position: absolute; left: 12px; top: 50%;
-            transform: translateY(-50%);
-            font-size: 16px; color: var(--text-soft);
+            position: absolute; left: 13px; font-size: 16px; pointer-events: none;
         }
         .input-wrap input {
-            width: 100%;
-            padding: 10px 40px 10px 38px;
-            border: 1.5px solid rgba(74,124,36,0.2); border-radius: 10px;
-            font-family: 'DM Sans', sans-serif; font-size: 14px;
-            color: var(--text); background: var(--cream);
-            outline: none; transition: border-color 0.2s;
+            width: 100%; padding: 11px 40px 11px 38px;
+            border: 2px solid #dcedc8; border-radius: var(--radius-sm);
+            font-family: 'Nunito', sans-serif; font-size: .95rem;
+            color: var(--text-dark); background: var(--cream);
+            outline: none; transition: border-color var(--transition);
             box-sizing: border-box;
         }
-        .input-wrap input:focus { border-color: var(--green-mid); background: white; }
+        .input-wrap input:focus { border-color: var(--green-main); background: var(--white); }
+        .toggle-eye {
+            position: absolute; right: 13px; cursor: pointer;
+            font-size: 16px; user-select: none; line-height: 1;
+        }
         .error-msg {
-            background: #fee2e2; color: #dc2626;
-            font-size: 13px; padding: 10px 14px;
-            border-radius: 10px; margin-bottom: 16px;
+            background: #fce4ec; color: #c62828;
+            font-size: .85rem; padding: 10px 14px;
+            border-radius: var(--radius-sm); margin-bottom: 16px;
             display: flex; align-items: center; gap: 8px;
         }
         .btn-login {
-            width: 100%; background: var(--green-deep); color: var(--green-pale);
-            border: none; cursor: pointer; padding: 12px;
-            border-radius: 100px; font-family: 'DM Sans', sans-serif;
-            font-size: 15px; font-weight: 500; margin-top: 8px;
-            transition: background 0.2s, transform 0.15s;
+            width: 100%; background: var(--green-dark); color: var(--white);
+            border: none; cursor: pointer; padding: 13px;
+            border-radius: 40px; font-family: 'Nunito', sans-serif;
+            font-size: 1rem; font-weight: 700; margin-top: 6px;
+            transition: background var(--transition), transform .15s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .toggle-eye {
-            position: absolute;
-            right: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            user-select: none;
-            line-height: 1;
-        }
-        .btn-login:hover { background: var(--green-mid); transform: translateY(-1px); }
+        .btn-login:hover { background: var(--green-main); transform: translateY(-1px); }
         .login-footer {
-            text-align: center; font-size: 12px;
-            color: var(--text-soft); margin-top: 20px;
-        }
-        .input-icon {
-            position: absolute;
-            left: 12px;
-            font-size: 16px;
-            pointer-events: none;
+            text-align: center; font-size: .8rem;
+            color: var(--text-light); margin-top: 22px;
         }
     </style>
 </head>
@@ -99,7 +79,7 @@
 <div class="login-box">
     <div class="login-header">
         <div class="login-icon">🌿</div>
-        <p class="login-business">Green Valley Lawn Care</p>
+        <p class="login-business" th:text="${company != null ? company.name : 'GreenCut Lawn Services'}">GreenCut Lawn Services</p>
         <h1>Admin Panel</h1>
     </div>
 
@@ -107,21 +87,21 @@
         ⚠️ Incorrect username or password.
     </div>
 
-    <form method="POST" action="/admin/login">
+    <form method="POST" th:action="@{/admin/login}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
         <div class="form-group">
-            <label>Username</label>
+            <label for="username">Username</label>
             <div class="input-wrap">
-                <span class="input-icon"></span>
-                <input type="text" name="username" placeholder="Admin" autofocus required/>
+                <span class="input-icon">👤</span>
+                <input type="text" id="username" name="username" placeholder="admin" autofocus required/>
             </div>
         </div>
         <div class="form-group">
-            <label>Password</label>
+            <label for="password">Password</label>
             <div class="input-wrap">
-                <span class="input-icon"></span>
-                <input type="password" name="password" id="passwordInput" placeholder="••••••••" required/>
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" name="password" placeholder="••••••••" required/>
                 <span class="toggle-eye" onclick="togglePassword()" id="eyeIcon">👁️</span>
             </div>
         </div>
@@ -130,10 +110,9 @@
 
     <p class="login-footer">🛡️ Restricted access — authorized users only</p>
 </div>
-</body>
 <script>
     function togglePassword() {
-        const input = document.getElementById('passwordInput');
+        const input = document.getElementById('password');
         const icon = document.getElementById('eyeIcon');
         if (input.type === 'password') {
             input.type = 'text';
@@ -144,4 +123,5 @@
         }
     }
 </script>
+</body>
 </html>
